@@ -1,0 +1,2991 @@
+/* ------------------------------------------------------------------
+   Self-hosted fonts. Latin subset only. Variable woff2 covers all the
+   weights/widths we use, so one file per face. Eliminates the Google
+   Fonts CDN roundtrip from the LCP path.
+   ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/vendor/fonts/geist-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/vendor/fonts/geist-mono-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/vendor/fonts/fraunces-italic-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/vendor/fonts/instrument-serif-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/vendor/fonts/instrument-serif-italic-latin.woff2') format('woff2');
+}
+
+/* ------------------------------------------------------------------
+   Lenis smooth scroll. Minimal stylesheet recommended by Lenis.
+   ------------------------------------------------------------------ */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* ------------------------------------------------------------------
+   IntegrityBuilds · design tokens & base
+   ------------------------------------------------------------------ */
+:root {
+  /* color */
+  --paper: #F4F2EB;
+  --paper-2: #ECE9DD;
+  --paper-3: #E2DFD1;
+  --ink: #0E0F12;
+  --ink-2: #25262B;
+  --ink-3: #4A4B53;
+  /* --mute used to be #75767D which failed 4.5:1 against the paper canvas.
+     Bumped to #5F6066 (4.7:1 against #F4F2EB) so secondary text passes
+     WCAG AA without fading the visual hierarchy too much. */
+  --mute: #5F6066;
+  /* Stage = always-dark surfaces (Process, CTA, ship card head, etc).
+     In light mode they stand out by being the dark thing on a paper
+     canvas. In dark mode the canvas is also dark, so stage shifts to
+     a SLIGHTLY deeper black than --paper so it still differentiates. */
+  --stage: #0E0F12;
+  --stage-2: #25262B;
+  --on-stage: #F1EEE3;
+  --on-stage-2: rgba(241, 238, 227, 0.66);
+  --line: rgba(14, 15, 18, 0.10);
+  --line-2: rgba(14, 15, 18, 0.18);
+  --accent: #1F49FF;
+  --accent-2: #6E3BFF;
+  --accent-3: #00C2A0;
+  --accent-glow: rgba(31, 73, 255, 0.18);
+  /* Per-section accent. Overridden per <section> below.
+     Defaults to brand blue. Services shifts to purple. About shifts to teal. */
+  --accent-section: #1F49FF;
+  --signal: #0E9F5E;
+  --warn: #E0701A;
+
+  /* type */
+  --font-sans: "Geist", "Söhne", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: "Instrument Serif", "Times New Roman", serif;
+
+  /* radius */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+
+  /* easings */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ---------------- Dark mode ----------------
+   Activates via [data-theme="dark"] on <html> (set inline before CSS
+   loads by a tiny script in <head>, so first paint never flashes light).
+   Inverts the paper/ink palette but keeps the warm accent character.
+   Sections that were already dark (Process, CTA, Midnight Boost preview)
+   shift to a slightly DIFFERENT dark so they still differentiate from
+   the surrounding dark canvas instead of melting into it. */
+[data-theme="dark"] {
+  --paper: #0E0F12;
+  --paper-2: #16181C;
+  --paper-3: #1E2026;
+  --ink: #F1EEE3;
+  --ink-2: #C6C2B5;
+  --ink-3: #8E8A7E;
+  /* Dark-mode --mute: needs to be light enough to pass 4.5:1 against
+     the near-black paper. #9A968B gives ~4.6:1. */
+  --mute: #9A968B;
+  /* Stage sits BELOW --paper in dark mode so always-dark surfaces
+     read as a deeper layer of the same scene, not as inverted oddities. */
+  --stage: #050608;
+  --stage-2: #14151A;
+  --on-stage: #F1EEE3;
+  --on-stage-2: rgba(241, 238, 227, 0.66);
+  --line: rgba(241, 238, 227, 0.10);
+  --line-2: rgba(241, 238, 227, 0.18);
+  --accent: #6E8CFF;
+  --accent-2: #A78AFF;
+  --accent-3: #4DE2C2;
+  --accent-glow: rgba(110, 140, 255, 0.22);
+  --accent-section: #6E8CFF;
+  --signal: #58E08C;
+  --warn: #F2A35F;
+}
+/* Smooth theme transitions only on color-bearing properties. Avoid
+   transitioning transform/opacity so the swap doesn't fight existing
+   reveal/hover animations. */
+html { transition: background-color 220ms var(--ease-out); }
+body {
+  transition: background-color 220ms var(--ease-out), color 220ms var(--ease-out);
+}
+
+/* ---------- dark-mode surface overrides ----------
+   Catches everything that needed an explicit dark variant: stage-scoped
+   --paper rebinding (so children using var(--paper) as a contrast color
+   still get the LIGHT contrast on dark stage), browser-chrome surfaces
+   in preview windows, and the Meridian work card paper-on-paper frame. */
+[data-theme="dark"] .process,
+[data-theme="dark"] .cta-card {
+  /* Inside the stage, "the paper color" means "the contrast color."
+     Locally re-bind --paper to the light cream so every child that
+     wrote color: var(--paper) (because it wanted the LIGHT text on
+     a dark stage) still gets light text in dark mode. */
+  --paper: var(--on-stage);
+}
+[data-theme="dark"] .preview-window {
+  background: var(--paper-2);
+  border-color: var(--line);
+}
+[data-theme="dark"] .preview-chrome {
+  background: var(--paper-3);
+  border-bottom-color: rgba(241, 238, 227, 0.06);
+}
+[data-theme="dark"] .preview-chrome .url {
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(241, 238, 227, 0.5);
+}
+/* Home work card: A&C Meridian's editorial paper-on-paper frame is the
+   brightest surface on the page in light mode. In dark mode shift it to
+   a deeper paper tone so it still reads editorial without blasting the
+   visitor with a white rectangle. The screenshot inside stays as-is
+   (it's a real screenshot of a real light website, can't be faked). */
+[data-theme="dark"] .work-card-meridian .work-card-preview {
+  background: #16151A;
+}
+/* Inline <code> in case study prose. In light mode the pill is a faint
+   black tint; in dark mode it needs a faint white tint instead. */
+[data-theme="dark"] .cs-block code,
+[data-theme="dark"] .cs-decision code {
+  background: rgba(241, 238, 227, 0.08);
+  color: var(--ink);
+}
+
+/* Theme toggle button. Compact icon-only square in the nav-right cluster.
+   Shows sun in dark mode (click to go light); moon in light mode (click to
+   go dark). The two SVGs are stacked and the inactive one is hidden via
+   data-theme on <html>. Color follows --ink so it stays legible in both. */
+.theme-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 200ms var(--ease-out), background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+.theme-toggle:hover {
+  border-color: var(--line-2);
+  background: var(--paper-2);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.theme-icon { display: block; }
+.theme-icon-sun { display: none; }
+.theme-icon-moon { display: block; }
+[data-theme="dark"] .theme-icon-sun { display: block; }
+[data-theme="dark"] .theme-icon-moon { display: none; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; }
+
+/* Skip-to-content link. Visually hidden until focused via keyboard, then
+   appears top-left for screen reader / keyboard users to jump past the nav. */
+.skip-to-content {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border-radius: 6px;
+  transform: translateY(-160%);
+  transition: transform 180ms var(--ease-out);
+}
+.skip-to-content:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Keyboard focus. Visible ring on every interactive element when tabbed to,
+   never on mouse click. Color binds to --accent-section so it shifts per
+   section. The 3px offset gap keeps the ring readable against any bg. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent-section, var(--accent));
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.btn:focus-visible,
+.nav-links a:focus-visible {
+  outline-offset: 4px;
+}
+.work-card:focus-visible,
+.service-card:focus-visible {
+  outline-offset: 6px;
+}
+
+/* ---------- type primitives ---------- */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.mono-tiny {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+/* Body paragraphs of meaningful length get pretty wrapping so the last
+   line never orphans a single short word. Modern browsers only. */
+.hero-sub,
+.section-desc,
+.cs-lede,
+.cs-method-callout p,
+.about-prose p {
+  text-wrap: pretty;
+}
+
+/* ---------- layout ---------- */
+.wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 20px; }
+}
+.rule {
+  height: 1px;
+  background: var(--line);
+  width: 100%;
+}
+
+/* ---------- nav ---------- */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 0;
+  transition: backdrop-filter 240ms var(--ease-out), background 240ms var(--ease-out), padding 240ms var(--ease-out);
+}
+.nav.scrolled {
+  padding: 10px 0;
+  background: rgba(244, 242, 235, 0.78);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.brand-mark::before,
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  background: var(--paper);
+}
+.brand-mark::before {
+  /* vertical I */
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  transform: translateX(-50%);
+}
+.brand-mark::after {
+  /* the build slash */
+  width: 12px;
+  height: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--accent);
+}
+.brand-name {
+  font-weight: 500;
+}
+.brand-name b {
+  font-weight: 600;
+  color: var(--ink);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-links a {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  padding: 12px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+.nav-links a:hover {
+  background: rgba(14, 15, 18, 0.06);
+  color: var(--ink);
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 0 rgba(14, 159, 94, 0.5);
+  animation: pulse 2s infinite var(--ease-out);
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(14, 159, 94, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(14, 159, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(14, 159, 94, 0); }
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border: 1px solid transparent;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out), border-color 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 200ms var(--ease-out);
+  white-space: nowrap;
+  background: transparent;
+  color: var(--ink);
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 1px 2px rgba(0,0,0,0.18);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(14, 15, 18, 0.22);
+}
+.btn-ghost {
+  border: 1px solid var(--line-2);
+  background: rgba(255,255,255,0.3);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.7);
+  border-color: var(--ink);
+}
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 4px 16px var(--accent-glow);
+}
+/* Dark mode: --accent is lighter blue, white text fails 4.5:1 contrast.
+   Swap to deep ink for legibility (6.5:1 against the lighter accent). */
+[data-theme="dark"] .btn-accent {
+  color: #0E0F12;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 4px 16px var(--accent-glow);
+}
+.btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(31, 73, 255, 0.32);
+}
+.btn .arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  padding: 160px 0 96px;
+  overflow: hidden;
+}
+
+/* cursor-follow aurora */
+.hero-aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    circle 480px at var(--mx, 50%) var(--my, 30%),
+    rgba(31, 73, 255, 0.16),
+    rgba(110, 59, 255, 0.10) 30%,
+    transparent 65%
+  );
+  transition: background 200ms linear;
+  mix-blend-mode: multiply;
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(14,15,18,0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14,15,18,0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  pointer-events: none;
+}
+/* Hero ambient wordmark. Replaces the decorative blob mesh (an AI-slop
+   tell) with a concept-driven typographic moment: the brand essence at
+   poster-scale, hairline weight, low opacity. Echoes the small "IB · 001"
+   caption at the top of the hero. Same statement, two volumes. Uses
+   Fraunces variable italic with the SOFT axis cranked for personality. */
+.hero-mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  margin: 0;
+  padding: 0 32px;
+  font-family: "Fraunces", "Instrument Serif", Times, serif;
+  font-style: italic;
+  font-weight: 200;
+  font-size: clamp(160px, 22vw, 360px);
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: var(--ink);
+  /* Starts invisible so LCP can't latch onto this gigantic decoration
+     (it would otherwise dwarf the H1 and lock LCP to a low-value paint).
+     Fades to its real opacity 1.2s in, well after first paint. The H1
+     becomes the LCP element instead, paints faster, scores better. */
+  opacity: 0;
+  animation: hero-mark-fade 1100ms var(--ease-out) 1200ms forwards;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  white-space: nowrap;
+  text-align: left;
+  will-change: opacity, transform;
+}
+@keyframes hero-mark-fade {
+  to { opacity: 0.085; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-mark { animation: none; opacity: 0.085; }
+}
+
+/* Paper grain. SVG turbulence noise applied with mix-blend-mode multiply
+   gives the hero a tactile, printed-paper quality without adding weight
+   to the DOM. Replaces the depth the blob mesh used to provide. */
+.hero-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.06 0 0 0 0 0.07 0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+}
+.hero-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.hero-top-row .mono { color: var(--ink-3); }
+.hero h1, .hero-h1 {
+  font-size: clamp(48px, 7.5vw, 104px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  max-width: 17ch;
+}
+/* On viewports where the floating ship card is visible, constrain the H1
+   so no line ever extends underneath it. The ship card occupies ~340px on
+   the right; this leaves the H1 with the remaining width. */
+@media (min-width: 981px) {
+  .hero-h1 { max-width: min(17ch, calc(100% - 360px)); }
+}
+.hero h1 .accent-word { color: var(--accent); }
+.hero h1 .serif-italic { font-size: 0.98em; color: var(--ink-2); }
+
+/* Lede stress: kept as a JS hook for the scroll-driven baseline nudge,
+   but visually uniform with the rest of the headline. The earlier weight
+   bump made "Custom-coded" dominate the line; reading uniform across all
+   words lets the cycling audience word carry the contrast. */
+.hero-h1 .lede-stress {
+  font-weight: inherit;
+  letter-spacing: inherit;
+  color: var(--ink);
+  will-change: transform;
+}
+
+/* kinetic word-by-word reveal */
+.kinetic-reveal .kw {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.45em);
+  filter: blur(6px);
+  animation: kw-in 700ms var(--ease-out) forwards;
+  margin-right: 0.22em;
+}
+.kinetic-reveal .kw:nth-child(1) { animation-delay: 120ms; }
+.kinetic-reveal .kw:nth-child(2) { animation-delay: 200ms; }
+.kinetic-reveal .kw:nth-child(3) { animation-delay: 280ms; }
+.kinetic-reveal .kw:nth-child(4) { animation-delay: 360ms; }
+.kinetic-reveal .kw:nth-child(5) { animation-delay: 440ms; }
+@keyframes kw-in {
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* word cycle (Remix / Stripe style) */
+.word-cycle {
+  position: relative;
+  display: inline-flex;
+  height: 1em;
+  /* inline-flex synthesizes its baseline from the box edge, which sits
+     ~0.14em above where the surrounding text baseline lands. Negative
+     vertical-align nudges the entire cycle box down so the visible word
+     sits on the same baseline as "built", "for", and the rest of the H1. */
+  vertical-align: -0.14em;
+  overflow: hidden;
+  color: var(--accent);
+}
+.cycle-track {
+  display: flex;
+  flex-direction: column;
+  /* flex-start so children render at their natural width instead of being
+     stretched to the widest sibling. The JS measure() depends on this. */
+  align-items: flex-start;
+  /* 380ms keeps the visible ghost-frame (where two words overlap during
+     the slide) brief enough to read as motion, not glitch. */
+  transition: transform 380ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.cycle-track .cw {
+  display: block;
+  line-height: 1;
+  height: 1em;
+  white-space: nowrap;
+  /* Without this, the parent flex column stretches every word to the
+     same (widest) width, which breaks measurement: each .cw reports the
+     stretched width instead of its natural text width. max-content lets
+     each one size to its actual glyphs so the JS can pick the true max. */
+  width: max-content;
+}
+.hero-sub-row {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 48px;
+  /* Cap width so the paragraph + CTA stack stays in the LEFT half of the
+     hero and the floating ship card has a clear right column. Tuned to
+     match the headline's effective measure on a 1440 viewport. */
+  max-width: 620px;
+}
+@media (max-width: 880px) {
+  .hero-sub-row { max-width: none; gap: 24px; }
+}
+.hero-sub {
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 52ch;
+  letter-spacing: -0.01em;
+}
+.hero-sub b { color: var(--ink); font-weight: 500; }
+.hero-ctas {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.hero-meta {
+  margin-top: 88px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 720px) {
+  .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+}
+.hero-meta-cell .mono-tiny { margin-bottom: 8px; display: block; }
+.hero-meta-cell .v {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.hero-meta-cell .v small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--mute);
+  margin-left: 4px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------- floating ship card (Stripe-style hero composition) ---------- */
+.ship-card {
+  position: absolute;
+  top: 168px;
+  right: 32px;
+  width: 320px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow:
+    0 30px 80px -20px rgba(14, 15, 18, 0.22),
+    0 14px 34px -14px rgba(14, 15, 18, 0.18),
+    0 1px 0 rgba(255,255,255,0.6) inset;
+  transform: rotate(2.2deg);
+  z-index: 3;
+  animation: ship-float 8s var(--ease-in-out) infinite;
+  font-family: var(--font-sans);
+  opacity: 0;
+  animation: ship-in 700ms 500ms var(--ease-out) forwards, ship-float 8s 1.2s var(--ease-in-out) infinite;
+}
+@keyframes ship-in {
+  from { opacity: 0; transform: rotate(2.2deg) translateY(20px); }
+  to { opacity: 1; transform: rotate(2.2deg) translateY(0); }
+}
+@keyframes ship-float {
+  0%, 100% { transform: rotate(2.2deg) translateY(0); }
+  50% { transform: rotate(2.2deg) translateY(-10px); }
+}
+
+.ship-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.ship-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--signal);
+  background: rgba(14, 159, 94, 0.08);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.ship-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 0 rgba(14, 159, 94, 0.5);
+  animation: pulse 2s infinite var(--ease-out);
+}
+.ship-time {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+}
+.ship-card-url {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  margin-bottom: 12px;
+  position: relative;
+}
+/* Live entry: the URL bar gets a small pulsing dot to signal
+   "these numbers are measured right now, on this page." */
+.ship-card.is-live .ship-card-url::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  transform: translateY(-50%);
+  box-shadow: 0 0 0 0 rgba(67, 197, 130, 0.7);
+  animation: ship-live-pulse 1.8s ease-out infinite;
+}
+@keyframes ship-live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(67, 197, 130, 0.7); }
+  70%  { box-shadow: 0 0 0 7px rgba(67, 197, 130, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(67, 197, 130, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship-card.is-live .ship-card-url::before { animation: none; }
+}
+.ship-bar {
+  position: relative;
+  height: 5px;
+  background: var(--paper-2);
+  border-radius: 999px;
+  margin: 0 0 22px;
+  overflow: visible;
+}
+.ship-bar-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  width: 100%;
+  animation: bar-fill 2.4s var(--ease-out) 700ms both;
+  transform-origin: left;
+}
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.ship-bar-label {
+  position: absolute;
+  top: 10px; left: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+}
+.ship-card-foot {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 0 10px;
+  border-top: 1px dashed var(--line-2);
+  margin-bottom: 12px;
+}
+.ship-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.ship-stat-k {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+.ship-stat-v {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+  color: var(--ink);
+}
+.ship-card-log {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--stage);
+  border-radius: 7px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.01em;
+  color: rgba(244,242,235,0.55);
+  line-height: 1.6;
+}
+.ship-card-log .log-line { display: flex; gap: 8px; }
+.ship-card-log .log-line.ok { color: rgba(244,242,235,0.92); }
+.ship-card-log .log-tag {
+  color: var(--accent-3);
+  width: 10px;
+  display: inline-block;
+}
+.ship-card-log .log-line.ok .log-tag { color: var(--signal); }
+.ship-card-log .log-line:not(.ok) .log-tag { color: var(--accent-3); }
+
+@media (max-width: 1180px) {
+  .ship-card { width: 280px; top: 140px; }
+}
+@media (max-width: 980px) {
+  .ship-card { display: none; }
+}
+
+/* Ship card cycling. When the build choreography swaps to the next build,
+   children fade together so the swap reads as one move, not seven. */
+.ship-card-url,
+.ship-time,
+.ship-bar-label,
+.ship-stat-v,
+.ship-card-log {
+  transition: opacity 200ms var(--ease-out);
+}
+.ship-card.cycling .ship-card-url,
+.ship-card.cycling .ship-time,
+.ship-card.cycling .ship-bar-label,
+.ship-card.cycling .ship-stat-v,
+.ship-card.cycling .ship-card-log {
+  opacity: 0.18;
+}
+
+/* ---------- marquee ---------- */
+.marquee-section {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 22px 0;
+  background: var(--paper);
+  overflow: hidden;
+}
+.marquee-section .label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.marquee-section .label::before,
+.marquee-section .label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  max-width: 120px;
+}
+.marquee {
+  display: flex;
+  gap: 56px;
+  animation: marquee 38s linear infinite;
+  white-space: nowrap;
+  align-items: center;
+  will-change: transform;
+}
+.marquee:hover { animation-play-state: paused; }
+/* When JS takes over to bind scroll-velocity, CSS animation steps aside. */
+.marquee.js-driven { animation: none !important; }
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink-2);
+  flex-shrink: 0;
+}
+.marquee-item .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--ink-3);
+}
+.marquee-item .domain {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink-3);
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---------- section heading ---------- */
+.section {
+  padding: 120px 0;
+  position: relative;
+  /* Defer rendering of off-screen sections. contain-intrinsic-size keeps
+     scrollbar height accurate before the section enters the viewport. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
+}
+/* The CTA section + footer also benefit from off-screen deferral. */
+.cta-section, .footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+.section-head {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 64px;
+}
+@media (max-width: 880px) {
+  .section-head { grid-template-columns: 1fr; gap: 16px; }
+}
+.section-eyebrow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.section-eyebrow .num {
+  font-family: var(--font-mono);
+  font-size: clamp(40px, 5.4vw, 64px);
+  letter-spacing: -0.05em;
+  color: var(--accent-section);
+  line-height: 0.95;
+  font-weight: 400;
+  font-feature-settings: "tnum";
+  transition: color 480ms var(--ease-out);
+}
+
+/* Per-section accent overrides. Subtle hue shift, same family. */
+#work       { --accent-section: var(--accent); }
+#services   { --accent-section: var(--accent-2); }
+#about      { --accent-section: var(--accent-3); }
+.section-eyebrow .lbl {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 6px;
+  border-top: 1px solid var(--line-2);
+  align-self: stretch;
+  max-width: 320px;
+}
+.section h2 {
+  font-size: clamp(32px, 4.5vw, 56px);
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  line-height: 1.02;
+  max-width: 18ch;
+}
+.section-desc {
+  font-size: 17px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  max-width: 56ch;
+  letter-spacing: -0.005em;
+}
+
+/* ---------- work cards ---------- */
+.work-grid {
+  display: grid;
+  gap: 24px;
+}
+.work-card {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--paper-2);
+  transition: transform 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
+  position: relative;
+}
+.work-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-2);
+  box-shadow: 0 24px 60px -20px rgba(14, 15, 18, 0.18);
+}
+@media (max-width: 880px) {
+  .work-card { grid-template-columns: 1fr; }
+}
+.work-card-meta {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+}
+@media (max-width: 880px) {
+  .work-card-meta { border-right: none; border-bottom: 1px solid var(--line); }
+}
+.work-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+.work-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.4);
+}
+.work-card-title {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+.work-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.work-card-row .k { font-family: var(--font-mono); font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; }
+.work-card-row .v { font-size: 14px; color: var(--ink-2); }
+.work-card-summary {
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  margin: 6px 0 12px;
+}
+.work-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  width: max-content;
+  transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out);
+}
+.work-card-link:hover { color: var(--accent); border-color: var(--accent); }
+.work-card-link .arrow { transition: transform 200ms var(--ease-out); }
+.work-card:hover .work-card-link .arrow { transform: translateX(3px); }
+
+/* preview/mockup container inside work card */
+.work-card-preview {
+  position: relative;
+  min-height: 380px;
+  overflow: hidden;
+  padding: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-window {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 30px 60px -20px rgba(14, 15, 18, 0.3), 0 12px 28px -12px rgba(14,15,18,0.2);
+  overflow: hidden;
+  border: 1px solid rgba(14,15,18,0.08);
+  transform: translateY(0);
+  transition: transform 600ms var(--ease-out);
+}
+.work-card:hover .preview-window { transform: translateY(-6px); }
+.preview-chrome {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 12px;
+  background: #F4F4F2;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.preview-chrome .dot { width: 9px; height: 9px; border-radius: 50%; background: #ddd; }
+.preview-chrome .dot:nth-child(1) { background: #FF5F57; }
+.preview-chrome .dot:nth-child(2) { background: #FEBC2E; }
+.preview-chrome .dot:nth-child(3) { background: #28C840; }
+.preview-chrome .url {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #888;
+  background: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+  flex: 1;
+  max-width: 220px;
+  text-align: center;
+}
+.preview-body { padding: 0; }
+
+/* Image-based preview body: full-bleed inside the chrome, no padding,
+   fills the available width while preserving the aspect ratio of the
+   captured screenshot. Used after we replaced the CSS mockups with
+   real screenshots of each live site. */
+.preview-window.has-image .preview-body { padding: 0; line-height: 0; }
+.preview-window.has-image .preview-body img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- card treatment 01 · skellywags (creator hub) ----------
+   Loud and social. The preview tilts ~-1.6deg, a live pill sits in the
+   chrome, and the magenta accent overrides the default blue on tags and
+   arrow. Hover restores the tilt to 0 and applies the normal lift. */
+.work-card-skelly {
+  --skelly-accent: #E94560;
+  --skelly-accent-soft: rgba(233, 69, 96, 0.14);
+}
+.work-card-skelly .preview-window {
+  transform: rotate(-1.6deg) translateY(0);
+  transform-origin: 50% 60%;
+  box-shadow:
+    0 30px 60px -20px rgba(233, 69, 96, 0.28),
+    0 12px 28px -12px rgba(14, 15, 18, 0.22);
+}
+.work-card-skelly:hover .preview-window {
+  transform: rotate(0deg) translateY(-6px);
+}
+.work-card-skelly .work-tag {
+  border-color: var(--skelly-accent-soft);
+  color: var(--skelly-accent);
+  background: var(--skelly-accent-soft);
+}
+.work-card-skelly .work-card-link:hover {
+  color: var(--skelly-accent);
+  border-color: var(--skelly-accent);
+}
+.work-card-skelly:hover .work-card-link .arrow {
+  color: var(--skelly-accent);
+}
+
+/* ---------- chrome pill (extension/notification dot in browser chrome) ----------
+   Shared building block used by card treatments. Compact, mono, with an
+   optional pulsing dot for "live" status. Sits at the right of the URL bar. */
+.chrome-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 6px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #14161a;
+  color: #fff;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.chrome-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #E94560;
+  box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.7);
+  animation: chrome-pill-pulse 1.8s ease-out infinite;
+}
+@keyframes chrome-pill-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(233, 69, 96, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chrome-pill-dot { animation: none; }
+  .work-card-skelly .preview-window { transform: none; }
+}
+
+/* ---------- card treatment 02 · A&C Meridian (editorial) ----------
+   Restraint. The browser chrome dims to near-invisible, the preview sits
+   flat like a printed plate, and a serif italic caption underneath reads
+   like a magazine credit line. No bright accent. The card stays quiet
+   until the visitor moves over it. */
+.work-card-meridian .preview-window {
+  box-shadow: 0 1px 0 rgba(14, 15, 18, 0.04);
+  border-color: rgba(14, 15, 18, 0.12);
+}
+.work-card-meridian .preview-chrome {
+  background: transparent;
+  border-bottom: 1px solid rgba(14, 15, 18, 0.06);
+  padding: 8px 12px;
+}
+.work-card-meridian .preview-chrome .dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(14, 15, 18, 0.18) !important;
+}
+.work-card-meridian .preview-chrome .url {
+  background: transparent;
+  color: rgba(14, 15, 18, 0.36);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.work-card-meridian .work-card-preview {
+  background: #F6F4EE;
+  flex-direction: column;
+  gap: 18px;
+}
+.preview-caption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(14, 15, 18, 0.42);
+  margin: 0;
+  text-align: center;
+}
+.preview-caption .serif-italic {
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.work-card-meridian .work-tag {
+  background: transparent;
+  border-color: rgba(14, 15, 18, 0.16);
+  color: var(--ink-2);
+}
+.work-card-meridian:hover .preview-window {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -16px rgba(14, 15, 18, 0.18);
+}
+
+/* ---------- card treatment 03 · Midnight Boost (cinematic dark) ----------
+   The card inverts. Deep ink background, light text, a cool atmospheric
+   glow under the preview, and a cyan accent that ties to Midnight Boost's
+   live identity. The screenshot inside stays as-is (it's the actual site).
+   The browser chrome darkens to match the card. */
+.work-card-midnight {
+  --midnight-bg: #0E1014;
+  --midnight-ink: #F6F5F2;
+  --midnight-ink-2: rgba(246, 245, 242, 0.66);
+  --midnight-mute: rgba(246, 245, 242, 0.42);
+  --midnight-accent: #6EE7F2;
+  --midnight-line: rgba(246, 245, 242, 0.10);
+  background: var(--midnight-bg);
+  border-color: rgba(14, 15, 18, 0.6);
+}
+.work-card-midnight .work-card-meta {
+  background: var(--midnight-bg);
+  border-right-color: var(--midnight-line);
+}
+@media (max-width: 880px) {
+  .work-card-midnight .work-card-meta {
+    border-right: none;
+    border-bottom-color: var(--midnight-line);
+  }
+}
+.work-card-midnight .work-card-title { color: var(--midnight-ink); }
+.work-card-midnight .work-card-summary { color: var(--midnight-ink-2); }
+.work-card-midnight .work-card-row .k { color: var(--midnight-mute); }
+.work-card-midnight .work-card-row .v { color: var(--midnight-ink-2); }
+.work-card-midnight .work-tag {
+  background: rgba(110, 231, 242, 0.08);
+  border-color: rgba(110, 231, 242, 0.22);
+  color: var(--midnight-accent);
+}
+.work-card-midnight .work-card-link {
+  color: var(--midnight-ink);
+  border-bottom-color: var(--midnight-line);
+}
+.work-card-midnight .work-card-link:hover {
+  color: var(--midnight-accent);
+  border-bottom-color: var(--midnight-accent);
+}
+.work-card-midnight:hover .work-card-link .arrow {
+  color: var(--midnight-accent);
+}
+.work-card-midnight .work-card-preview {
+  background:
+    radial-gradient(60% 60% at 50% 70%, rgba(110, 231, 242, 0.10), transparent 70%),
+    var(--midnight-bg);
+}
+.work-card-midnight .preview-window {
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(110, 231, 242, 0.10),
+    0 20px 60px -30px rgba(110, 231, 242, 0.30);
+  border-color: rgba(110, 231, 242, 0.16);
+}
+.work-card-midnight .preview-chrome {
+  background: #14171C;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+.work-card-midnight .preview-chrome .url {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(246, 245, 242, 0.55);
+}
+.work-card-midnight:hover {
+  border-color: rgba(110, 231, 242, 0.22);
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(110, 231, 242, 0.18);
+}
+
+/* ---------- card treatment 04 · Stillerror (IDE / debugger) ----------
+   The card pretends to be an editor pane. Mono everything, a coral-red
+   ERROR pill where the LIVE pill sits on Skellywags, the browser chrome
+   reads as a tab bar with a status indicator. The screenshot inside is
+   already a real screenshot of a real dark IDE-styled site, so the card
+   chrome is tuned to extend that aesthetic rather than fight it.
+   Different from Midnight: Midnight is cinematic + atmospheric (cyan
+   glow), Stillerror is technical + structural (coral warning state). */
+.work-card-stillerror {
+  --se-bg: #0B0C10;
+  --se-bg-2: #12141A;
+  --se-ink: #EDECE6;
+  --se-ink-2: rgba(237, 236, 230, 0.66);
+  --se-mute: rgba(237, 236, 230, 0.40);
+  --se-accent: #EF5A5A;
+  --se-accent-soft: rgba(239, 90, 90, 0.10);
+  --se-ok: #5DC990;
+  --se-line: rgba(237, 236, 230, 0.08);
+  background: var(--se-bg);
+  border-color: rgba(0, 0, 0, 0.6);
+}
+.work-card-stillerror .work-card-meta {
+  background: var(--se-bg);
+  border-right-color: var(--se-line);
+  font-family: var(--font-mono);
+}
+@media (max-width: 880px) {
+  .work-card-stillerror .work-card-meta {
+    border-right: none;
+    border-bottom-color: var(--se-line);
+  }
+}
+.work-card-stillerror .work-card-title {
+  color: var(--se-ink);
+  font-family: var(--font-sans);
+}
+.work-card-stillerror .work-card-summary { color: var(--se-ink-2); }
+.work-card-stillerror .work-card-row .k { color: var(--se-mute); }
+.work-card-stillerror .work-card-row .v { color: var(--se-ink-2); }
+.work-card-stillerror .work-tag {
+  background: var(--se-accent-soft);
+  border-color: rgba(239, 90, 90, 0.22);
+  color: var(--se-accent);
+}
+.work-card-stillerror .work-card-link {
+  color: var(--se-ink);
+  border-bottom-color: var(--se-line);
+}
+.work-card-stillerror .work-card-link:hover {
+  color: var(--se-accent);
+  border-bottom-color: var(--se-accent);
+}
+.work-card-stillerror:hover .work-card-link .arrow {
+  color: var(--se-accent);
+}
+.work-card-stillerror .work-card-preview {
+  background:
+    /* hairline grid like a code editor gutter */
+    linear-gradient(to bottom, rgba(237, 236, 230, 0.02) 0, transparent 1px) 0 0 / 100% 28px,
+    var(--se-bg);
+}
+.work-card-stillerror .preview-window {
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(239, 90, 90, 0.08);
+  border-color: rgba(237, 236, 230, 0.10);
+  border-radius: 8px;
+}
+.work-card-stillerror .preview-chrome {
+  background: var(--se-bg-2);
+  border-bottom-color: rgba(237, 236, 230, 0.05);
+}
+.work-card-stillerror .preview-chrome .url {
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(237, 236, 230, 0.55);
+  font-family: var(--font-mono);
+}
+.work-card-stillerror:hover {
+  border-color: rgba(239, 90, 90, 0.22);
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(239, 90, 90, 0.18);
+}
+
+/* Error pill in the browser chrome for the Stillerror card. Mirrors
+   chrome-pill structure but in error-state colors (coral + steady dot,
+   no pulse, because it's a stable indicator not a live signal). */
+.chrome-pill-error {
+  background: var(--se-accent-soft);
+  color: var(--se-accent);
+  border: 1px solid rgba(239, 90, 90, 0.28);
+}
+.chrome-pill-error .chrome-pill-dot {
+  background: var(--se-accent);
+  box-shadow: none;
+  animation: none;
+}
+
+/* ---------- services ---------- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 880px) {
+  .services-grid { grid-template-columns: 1fr; }
+}
+.service-card {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: transform 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
+}
+.service-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-2);
+  box-shadow: 0 24px 60px -20px rgba(14, 15, 18, 0.18);
+}
+.service-card.featured {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.service-card.featured .service-name,
+.service-card.featured h3,
+.service-card.featured .price-amount,
+.service-card.featured .price-range,
+.service-card.featured .service-feat li,
+.service-card.featured .mono { color: var(--paper); }
+.service-card.featured .mono-tiny { color: rgba(244,242,235,0.6); }
+.service-card.featured .service-feat li::before { background: var(--accent-3); }
+.service-card.featured .service-divider { border-color: rgba(244,242,235,0.16); }
+.service-card.featured .featured-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--accent-3);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.service-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.service-name {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.service-sub {
+  font-size: 14px;
+  color: var(--mute);
+  letter-spacing: -0.005em;
+}
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.price-amount {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  font-feature-settings: "tnum";
+}
+.price-range {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--mute);
+}
+.service-divider {
+  height: 1px;
+  background: transparent;
+  border-top: 1px dashed var(--line-2);
+}
+.service-feat {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.service-feat li {
+  font-size: 14.5px;
+  color: var(--ink-2);
+  line-height: 1.4;
+  padding-left: 20px;
+  position: relative;
+  letter-spacing: -0.005em;
+}
+.service-feat li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8px;
+  width: 10px; height: 2px;
+  background: var(--accent-section);
+  transition: background 480ms var(--ease-out);
+}
+.service-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+}
+.service-deliver {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+/* ---------- process interstitial (scroll-pinned) ----------
+   A dark band between #work and #services. Container is ~250vh tall. The
+   stage inside uses position:sticky so it pins for the duration of the
+   scroll. JS reads scroll progress (0-1) through the section and toggles
+   step states (.is-active / .is-passed) on each .process-step.
+
+   Why a pinned section here: the page has a hero moment, work moment, and
+   services moment. The middle is where energy drops. A pinned narrative
+   beat ("Brief → Build → Ship") gives the middle of the page a memorable
+   anchor without changing what's around it. */
+.process {
+  position: relative;
+  height: 250vh;
+  background: var(--stage);
+  color: var(--on-stage);
+  /* No overflow:hidden here. It would break the sticky pinning of
+     .process-pin since sticky elements are clipped by their nearest
+     scrollable ancestor. The pin handles its own overflow below. */
+}
+.process-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.process-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 56px;
+  align-items: start;
+  width: 100%;
+}
+@media (max-width: 880px) {
+  .process { height: 220vh; }
+  .process-stage { grid-template-columns: 32px 1fr; gap: 24px; }
+}
+
+/* Vertical rail to the left of the steps. The thumb fills as scroll progress
+   increases, giving the user a visible "you are here" inside the pin. */
+.process-rail {
+  position: relative;
+  width: 1px;
+  height: min(60vh, 480px);
+  background: rgba(244, 242, 235, 0.14);
+  margin-top: 8vh;
+}
+.process-rail-thumb {
+  position: absolute;
+  inset: 0 -1px auto -1px;
+  height: 0;
+  background: var(--paper);
+  transition: height 220ms var(--ease-out);
+}
+
+.process-eyebrow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.process-eyebrow-num {
+  font-family: var(--font-mono);
+  font-size: clamp(40px, 5vw, 64px);
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+  color: rgba(244, 242, 235, 0.5);
+}
+.process-eyebrow-lbl {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(244, 242, 235, 0.6);
+  padding-top: 4px;
+  border-top: 1px solid rgba(244, 242, 235, 0.18);
+  min-width: 120px;
+  text-align: right;
+}
+
+.process-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  min-height: clamp(280px, 38vh, 420px);
+  max-width: 760px;
+}
+/* All three steps share the same anchor and cross-fade. Only the active
+   step is fully visible. Passed steps drift up and out, upcoming steps
+   wait below. This keeps the pin to a single visible composition rather
+   than a stack that overflows the viewport. */
+.process-step {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 28px;
+  align-items: baseline;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 540ms var(--ease-out), transform 540ms var(--ease-out);
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+.process-step.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.process-step.is-passed {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+.process-step-num {
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  color: var(--paper);
+  line-height: 0.95;
+  font-feature-settings: "tnum";
+  min-width: 1.4ch;
+}
+.process-step-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--paper);
+  margin: 0;
+  display: inline;
+}
+/* Specificity bumped (.process .process-step-text) to beat the legacy
+   .process-step p rule used on case study pages. */
+.process .process-step-text {
+  grid-column: 2;
+  margin: 18px 0 0;
+  /* Larger body for the dramatic dark interstitial. Smaller body sizes
+     read as functional copy and don't carry the weight of the moment. */
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: 1.55;
+  /* Pure white at 82% alpha. Paper-yellow at high alpha shimmers against
+     near-black; neutral white reads cleaner and is easier on the eyes. */
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: -0.008em;
+  max-width: 48ch;
+}
+/* Mobile: sticky cross-fade is wrong for small screens. We escape the pin,
+   stack all three steps statically, scale the typography down so it fits
+   the column, and let the reader move at their own pace. */
+@media (max-width: 880px) {
+  .process { height: auto; }
+  .process-pin {
+    position: static;
+    height: auto;
+    padding: 88px 0;
+    overflow: visible;
+  }
+  .process-stage {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .process-rail { display: none; }
+  .process-eyebrow {
+    position: relative;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .process-eyebrow-num { font-size: 36px; }
+  .process-eyebrow-lbl {
+    text-align: left;
+    border-top: none;
+    padding-top: 0;
+    min-width: 0;
+  }
+  .process-steps {
+    min-height: 0;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  /* Override every animation/positioning property on the steps so they
+     stack like a normal vertical list. Important: beats the desktop
+     opacity/transform that the scroll driver toggles via classes. */
+  .process-step {
+    position: static !important;
+    inset: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    pointer-events: auto !important;
+  }
+  .process-step-num {
+    font-size: 24px;
+  }
+  .process-step-label {
+    font-size: clamp(40px, 12vw, 56px);
+    display: block;
+  }
+  .process .process-step-text {
+    grid-column: 1;
+    margin-top: 12px;
+    font-size: 16px;
+    max-width: none;
+  }
+}
+
+/* Reduced motion: show all steps fully, no transition. */
+@media (prefers-reduced-motion: reduce) {
+  .process { height: auto; }
+  .process-pin { position: static; height: auto; padding: 80px 0; }
+  .process-step { opacity: 1 !important; transform: none !important; }
+  .process-rail-thumb { height: 100% !important; }
+}
+
+/* ---------- about ---------- */
+.about {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .about { grid-template-columns: 1fr; gap: 40px; }
+}
+.about-prose {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  letter-spacing: -0.01em;
+  max-width: 56ch;
+}
+.about-prose p { margin: 0 0 20px; }
+.about-prose p:last-child { margin-bottom: 0; }
+.about-prose strong { font-weight: 500; color: var(--ink); }
+.about-prose em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.08em;
+  color: var(--ink);
+}
+
+.about-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--paper-2);
+  padding: 28px;
+  position: sticky;
+  top: 100px;
+}
+.about-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.about-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.about-card-name {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.about-card-role {
+  font-size: 13px;
+  color: var(--mute);
+  font-family: var(--font-mono);
+}
+.about-card-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.about-card-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  font-size: 14px;
+  align-items: baseline;
+}
+.about-card-row .k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.about-card-row .v { color: var(--ink-2); letter-spacing: -0.005em; }
+.about-card-row .v.accent { color: var(--ink); font-weight: 500; }
+.about-card-row .v .signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--signal);
+}
+
+/* ---------- big CTA ---------- */
+.cta-section {
+  padding: 96px 0 120px;
+  position: relative;
+}
+.cta-card {
+  position: relative;
+  border-radius: var(--r-xl);
+  background: var(--stage);
+  color: var(--on-stage);
+  padding: 80px 64px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cta-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(31, 73, 255, 0.5), transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(110, 59, 255, 0.35), transparent 55%),
+    radial-gradient(circle at 60% 100%, rgba(0, 194, 160, 0.18), transparent 50%);
+  z-index: -1;
+}
+.cta-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  z-index: -1;
+}
+.cta-card .mono { color: rgba(244,242,235,0.6); }
+.cta-card h2 {
+  font-size: clamp(36px, 5.5vw, 72px);
+  color: var(--paper);
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  line-height: 1.02;
+  max-width: 16ch;
+  margin-top: 18px;
+}
+.cta-card h2 .serif-italic { color: rgba(244,242,235,0.85); }
+.cta-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 32px;
+  margin-top: 56px;
+  flex-wrap: wrap;
+}
+.cta-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(244,242,235,0.75);
+  font-size: 14.5px;
+  letter-spacing: -0.005em;
+}
+.cta-card-meta .l {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(244,242,235,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.cta-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.cta-buttons .btn-primary {
+  background: var(--paper);
+  color: var(--ink);
+}
+.cta-buttons .btn-ghost {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--paper);
+}
+.cta-buttons .btn-ghost:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.36);
+}
+
+/* ---------- intake form (lives inside .cta-card on dark bg) ---------- */
+.intake-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 40px;
+  max-width: 720px;
+}
+.intake-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 620px) {
+  .intake-row { grid-template-columns: 1fr; gap: 22px; }
+}
+.intake-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.intake-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(244, 242, 235, 0.6);
+}
+.intake-label small {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: rgba(244, 242, 235, 0.4);
+  margin-left: 6px;
+}
+.intake-form input,
+.intake-form select,
+.intake-form textarea {
+  font-family: inherit;
+  font-size: 15.5px;
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  letter-spacing: -0.005em;
+  transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.intake-form textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.45;
+}
+.intake-form input::placeholder,
+.intake-form textarea::placeholder {
+  color: rgba(244, 242, 235, 0.32);
+}
+.intake-form input:focus,
+.intake-form select:focus,
+.intake-form textarea:focus {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.10);
+  outline: none;
+}
+.intake-form input:focus-visible,
+.intake-form select:focus-visible,
+.intake-form textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Validation: only after the user has tried submitting, so we don't
+   yell at people while they're still typing. */
+.intake-form.was-validated input:invalid,
+.intake-form.was-validated textarea:invalid {
+  border-color: var(--warn);
+}
+.intake-form select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23F4F2EB' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+.intake-form select option {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.intake-footer {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: 28px;
+  align-items: center;
+  margin-top: 6px;
+}
+@media (max-width: 720px) {
+  .intake-footer { grid-template-columns: 1fr; gap: 18px; }
+  .intake-submit { width: 100%; justify-content: center; }
+}
+.intake-note {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(244, 242, 235, 0.62);
+  letter-spacing: -0.005em;
+  max-width: 48ch;
+}
+.intake-submit[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.intake-submit.is-loading .intake-submit-label::after {
+  content: "…";
+}
+
+/* Success state replaces the form in place. Same vertical footprint
+   so the page doesn't jump on submit. */
+.intake-success {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 40px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.04);
+  max-width: 720px;
+}
+.intake-success .mono {
+  color: var(--accent-3);
+}
+.intake-success h3 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: var(--paper);
+  margin: 0;
+}
+.intake-success p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: rgba(244, 242, 235, 0.82);
+  max-width: 56ch;
+}
+.intake-success p b { color: var(--paper); font-weight: 500; }
+
+/* Error message inline above the submit button. The recovery link
+   inside is styled to feel like a continuation of the message, not a
+   secondary CTA. Visitors who hit an error should see "X failed, do
+   Y instead" as one thought. */
+.intake-error {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FF8B7F;
+  margin: 0 0 -10px 0;
+  line-height: 1.5;
+}
+.intake-error a {
+  color: var(--paper);
+  border-bottom: 1px solid rgba(255, 139, 127, 0.5);
+  white-space: nowrap;
+}
+.intake-error a:hover { border-color: var(--paper); }
+
+/* Fallback contact info: stays below the form even after success. */
+.intake-fallback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  align-items: baseline;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  font-size: 14px;
+  color: rgba(244, 242, 235, 0.7);
+}
+.intake-fallback .l {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(244, 242, 235, 0.45);
+}
+.intake-fallback a {
+  color: var(--paper);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 160ms var(--ease-out);
+}
+.intake-fallback a:hover { border-color: var(--paper); }
+
+/* ---------- footer ---------- */
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 56px 0 40px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+@media (max-width: 720px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+.footer-col h3,
+.footer-col h5 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+  font-weight: 400;
+}
+.footer-col a, .footer-col span {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  padding: 6px 0;
+  letter-spacing: -0.005em;
+  transition: color 160ms var(--ease-out);
+}
+.footer-col a:hover { color: var(--accent); }
+.footer-brand-row { max-width: 36ch; }
+.footer-brand-row p {
+  font-size: 14px;
+  color: var(--mute);
+  line-height: 1.5;
+  margin: 12px 0 0;
+  letter-spacing: -0.005em;
+}
+.footer-bottom {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer-bottom .mono-tiny { color: var(--mute); }
+
+/* ---------- scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- cross-document view transitions ----------
+   Index page work cards morph into case study preview frames. Each preview
+   window carries a stable view-transition-name; the destination case study
+   page reuses the same name on its hero preview. The browser interpolates
+   the bounding box between the two. Falls back to instant nav silently. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+.preview-skelly     { view-transition-name: case-skelly; }
+.preview-meridian   { view-transition-name: case-meridian; }
+.preview-midnight   { view-transition-name: case-midnight; }
+.preview-stillerror { view-transition-name: case-stillerror; }
+
+::view-transition-old(case-skelly),
+::view-transition-new(case-skelly),
+::view-transition-old(case-meridian),
+::view-transition-new(case-meridian),
+::view-transition-old(case-midnight),
+::view-transition-new(case-midnight),
+::view-transition-old(case-stillerror),
+::view-transition-new(case-stillerror) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- sticky side-rail (section indicator) ----------
+   Pinned to the left viewport edge on wide screens. Small mono label
+   rotates vertically; a thumb on the track ticks down as you scroll.
+   Color binds to the active section's --accent-section. */
+.side-rail {
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+@media (max-width: 1280px) {
+  .side-rail { display: none; }
+}
+.side-rail-track {
+  position: relative;
+  width: 1px;
+  height: 260px;
+  background: var(--line);
+}
+.side-rail-thumb {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 3px;
+  height: 14%;
+  background: var(--accent);
+  transition: top 600ms var(--ease-out), background 480ms var(--ease-out);
+}
+.side-rail-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  writing-mode: vertical-rl;
+  transition: color 480ms var(--ease-out);
+}
+
+/* ---------- custom cursor + magnetic CTAs ----------
+   Two fixed-position elements injected by JS (.cursor-dot + .cursor-ring).
+   mix-blend-mode: difference makes the cursor visible on both paper and ink
+   surfaces. Disabled on touch and under reduced-motion. */
+@media (pointer: fine) {
+  .cursor-dot,
+  .cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    transition: opacity 220ms var(--ease-out), border-color 220ms var(--ease-out);
+    opacity: 0;
+  }
+  /* Hide native cursor over interactive surfaces; keep it on text inputs. */
+  html, body, a, button, .btn, .work-card, .service-card, .nav-links a {
+    cursor: none;
+  }
+  input, textarea, [contenteditable] { cursor: text; }
+}
+@media (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
+
+/* ---------- prefers-reduced-motion guards ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .kinetic-reveal .kw { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .ship-card { opacity: 1 !important; transform: rotate(2.2deg) !important; }
+  .ship-bar-fill { transform: scaleX(1) !important; }
+  .marquee { animation: none !important; }
+  .hero-mesh { display: none; }
+  .hero-aurora { display: none; }
+  .status-dot, .ship-dot { box-shadow: none !important; }
+  .cursor-dot, .cursor-ring { display: none !important; }
+  html, body, a, button, .btn, .work-card, .service-card, .nav-links a { cursor: auto !important; }
+}
+
+/* ---------- mocked website previews (per project) ---------- */
+
+/* Skellywags · dark gaming hub */
+.preview-skelly { background: #0A0710; color: #fff; }
+.preview-skelly .preview-chrome { background: #0F0C18; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.preview-skelly .preview-chrome .url { background: #1A1424; color: #B998FF; }
+.preview-skelly .preview-body { padding: 16px 14px 16px; }
+.preview-skelly .ps-hero {
+  background: radial-gradient(120% 70% at 50% 0%, rgba(168, 85, 247, 0.55), transparent 60%), radial-gradient(80% 60% at 100% 100%, rgba(236, 72, 153, 0.45), transparent 65%);
+  border-radius: 8px;
+  padding: 14px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.preview-skelly .ps-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #ED1D49;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.preview-skelly .ps-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 6px;
+  line-height: 1;
+}
+.preview-skelly .ps-sub {
+  font-size: 9px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 3px;
+}
+.preview-skelly .ps-tier {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  margin-top: 7px;
+}
+.preview-skelly .ps-tier > div {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.preview-skelly .ps-tier > div b { display: block; font-size: 10px; color: #C4B5FD; font-weight: 500; }
+
+/* A&C Meridian · editorial */
+.preview-meridian { background: #FAF8F2; color: #181819; }
+.preview-meridian .preview-body { padding: 18px 14px 14px; }
+.preview-meridian .pm-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+}
+.preview-meridian .pm-h {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-top: 6px;
+}
+.preview-meridian .pm-h b {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 500;
+}
+.preview-meridian .pm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+.preview-meridian .pm-grid > div {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 5px;
+  padding: 7px;
+  font-size: 8px;
+  color: #555;
+}
+.preview-meridian .pm-grid > div b { display: block; font-size: 10px; font-weight: 500; color: #181819; letter-spacing: -0.01em; margin-bottom: 2px; }
+.preview-meridian .pm-rule {
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+  margin: 10px 0 6px;
+}
+.preview-meridian .pm-foot {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: #888;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Midnight Boost · cinematic auto */
+.preview-midnight { background: #07080C; color: #fff; }
+.preview-midnight .preview-chrome { background: #0A0B11; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.preview-midnight .preview-chrome .url { background: #11131C; color: #6EE7F9; }
+.preview-midnight .preview-body { padding: 0; }
+.preview-midnight .pmn-hero {
+  position: relative;
+  height: 130px;
+  background: linear-gradient(180deg, #0E1421 0%, #050608 100%);
+  overflow: hidden;
+}
+.preview-midnight .pmn-hero::before {
+  content: "";
+  position: absolute;
+  bottom: -40px; left: 10%; right: 10%;
+  height: 120px;
+  background: radial-gradient(ellipse at center top, rgba(110, 231, 249, 0.45), transparent 70%);
+  filter: blur(8px);
+}
+.preview-midnight .pmn-car {
+  position: absolute;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  width: 140px; height: 48px;
+  background: linear-gradient(180deg, #1E2A3D 0%, #0B1018 100%);
+  border-radius: 24px 24px 8px 8px / 30px 30px 8px 8px;
+  box-shadow: 0 16px 30px -8px rgba(0,0,0,0.6), 0 0 30px rgba(110, 231, 249, 0.25);
+}
+.preview-midnight .pmn-car::before,
+.preview-midnight .pmn-car::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  width: 16px; height: 16px;
+  background: #050608;
+  border: 2px solid #1E2A3D;
+  border-radius: 50%;
+}
+.preview-midnight .pmn-car::before { left: 14px; }
+.preview-midnight .pmn-car::after { right: 14px; }
+.preview-midnight .pmn-meta {
+  position: absolute;
+  top: 14px; left: 14px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.preview-midnight .pmn-title {
+  position: absolute;
+  bottom: 12px; left: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.preview-midnight .pmn-body { padding: 12px 14px 14px; }
+.preview-midnight .pmn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+}
+.preview-midnight .pmn-row > div {
+  background: #11131C;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 5px;
+  padding: 7px;
+  font-size: 8px;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.preview-midnight .pmn-row > div b {
+  display: block;
+  color: #6EE7F9;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+/* Stillerror · IDE / debugger */
+.preview-stillerror { background: #0B0C10; color: var(--se-ink, #EDECE6); }
+.preview-stillerror .preview-chrome { background: #12141A; border-bottom: 1px solid rgba(237, 236, 230, 0.06); }
+.preview-stillerror .preview-chrome .url { background: rgba(0, 0, 0, 0.45); color: rgba(237, 236, 230, 0.55); font-family: var(--font-mono); }
+
+/* ---------- case study page ---------- */
+.cs-hero {
+  padding: 140px 0 64px;
+  position: relative;
+}
+.cs-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--mute);
+  margin-bottom: 32px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out);
+}
+.cs-back:hover { color: var(--ink); border-color: var(--ink-3); }
+.cs-meta-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 48px 0 0;
+}
+@media (max-width: 720px) {
+  .cs-meta-row { grid-template-columns: repeat(2, 1fr); }
+}
+.cs-meta-cell .k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 8px;
+}
+.cs-meta-cell .v { font-size: 16px; color: var(--ink); font-weight: 500; letter-spacing: -0.01em; }
+
+/* Method callout. Used when a project has an unusual working method
+   that explains its shipped duration (e.g. live build sessions). */
+.cs-method-callout {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 28px;
+  align-items: start;
+  margin: 28px 0 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+.cs-method-callout .cs-method-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.cs-method-callout p {
+  margin: 0;
+  font-size: 16.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  letter-spacing: -0.005em;
+  max-width: 70ch;
+}
+.cs-method-callout p b { color: var(--ink); font-weight: 500; }
+@media (max-width: 720px) {
+  .cs-method-callout { grid-template-columns: 1fr; gap: 10px; padding: 18px 20px; }
+}
+
+.cs-h1 {
+  font-size: clamp(40px, 6vw, 80px);
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  line-height: 1;
+  max-width: 18ch;
+}
+.cs-lede {
+  font-size: 22px;
+  color: var(--ink-2);
+  line-height: 1.45;
+  margin-top: 28px;
+  max-width: 56ch;
+  letter-spacing: -0.01em;
+}
+
+.cs-preview-section {
+  padding: 24px 0 64px;
+}
+.cs-preview-frame {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  background: var(--paper-2);
+  padding: 32px;
+}
+.cs-preview-frame .preview-window {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.cs-preview-frame .preview-body { min-height: 380px; }
+
+.cs-body { padding: 32px 0 96px; }
+.cs-block {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 48px;
+  padding: 56px 0;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 880px) { .cs-block { grid-template-columns: 1fr; gap: 16px; } }
+.cs-block-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cs-block h3 {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 18px;
+  max-width: 22ch;
+}
+.cs-block p {
+  font-size: 17px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  margin: 0 0 16px;
+  max-width: 60ch;
+  letter-spacing: -0.005em;
+}
+.cs-block ul {
+  font-size: 16px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  padding-left: 0;
+  margin: 18px 0 0;
+  list-style: none;
+  max-width: 60ch;
+}
+.cs-block ul li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+}
+.cs-block ul li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 10px;
+  width: 12px; height: 2px;
+  background: var(--accent);
+}
+
+.cs-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 32px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 720px) { .cs-stat-row { grid-template-columns: 1fr; } }
+.cs-stat {
+  padding: 28px 24px;
+  border-right: 1px solid var(--line);
+}
+.cs-stat:last-child { border-right: none; }
+.cs-stat .v {
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  font-feature-settings: "tnum";
+  line-height: 1;
+}
+.cs-stat .k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Honeypot input. Off-screen, zero-size, no tab focus, no autocomplete.
+   Real users never see it; bots that parse the form fill it. The server
+   silently drops any submission where this field is non-empty. */
+.intake-honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Inline code in case study prose. Mono face, faint tint, no border so it
+   doesn't fight the rest of the editorial type. */
+.cs-block code,
+.cs-decision code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: rgba(14, 15, 18, 0.05);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+/* ---------- case study: decisions block ----------
+   A numbered list of decisions made on the project. Each item shows what
+   I picked, the one-line reason, and what I considered and rejected. This
+   is the "show your work" block. Lives between the stat row and Result. */
+.cs-decision-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.cs-decision {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cs-decision-num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--mute);
+  letter-spacing: -0.02em;
+  padding-top: 4px;
+  font-feature-settings: "tnum";
+}
+.cs-decision-pick {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.25;
+  margin: 0 0 10px;
+  color: var(--ink);
+}
+.cs-decision-why {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  margin: 0 0 14px;
+  max-width: 64ch;
+}
+.cs-decision-rejected {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.cs-decision-rejected .k {
+  color: var(--ink-3);
+  margin-right: 8px;
+}
+@media (max-width: 720px) {
+  .cs-decision { grid-template-columns: 1fr; gap: 8px; padding: 24px 0; }
+  .cs-decision-num { padding-top: 0; font-size: 14px; }
+  .cs-decision-pick { font-size: 19px; }
+  .cs-decision-why { font-size: 15px; }
+}
+
+.cs-next {
+  padding: 80px 0 120px;
+  border-top: 1px solid var(--line);
+}
+.cs-next-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  padding: 36px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  transition: border-color 200ms var(--ease-out), transform 200ms var(--ease-out);
+  flex-wrap: wrap;
+}
+.cs-next-card:hover {
+  border-color: var(--ink-3);
+  transform: translateY(-2px);
+}
+.cs-next-card .l { font-family: var(--font-mono); font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
+.cs-next-card h3 {
+  font-size: 32px;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+.cs-next-card .arrow { font-size: 24px; color: var(--ink-3); transition: transform 200ms var(--ease-out), color 200ms var(--ease-out); }
+.cs-next-card:hover .arrow { transform: translateX(6px); color: var(--accent); }
+
+/* shared utility */
+.col-end { display: flex; justify-content: flex-end; }
+@media (max-width: 880px) { .col-end { justify-content: flex-start; } }
+
+/* hide on mobile */
+@media (max-width: 720px) {
+  .nav-links, .status-pill { display: none; }
+}
+
+/* ---------- print stylesheet ----------
+   Strip motion/decoration so case studies print cleanly. */
+@media print {
+  /* Kill chrome that doesn't belong on paper */
+  .nav, .footer, .side-rail, .hero-mark, .hero-noise, .hero-aurora, .hero-grid,
+  .ship-card, .cursor-dot, .cursor-ring, .marquee-section, .cta-section,
+  .skip-to-content, .process { display: none !important; }
+
+  /* Reset background so ink saves toner */
+  html, body { background: #fff !important; color: #000 !important; }
+
+  /* Reveal hidden content unconditionally */
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .kinetic-reveal .kw { opacity: 1 !important; transform: none !important; filter: none !important; }
+
+  /* Print URLs after links */
+  a[href^="http"]::after,
+  a[href^="mailto:"]::after { content: " (" attr(href) ")"; font-family: var(--font-mono); font-size: 0.85em; color: #555; }
+  /* But not on internal nav anchors */
+  a[href^="#"]::after { content: ""; }
+
+  /* Avoid orphans / widows */
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  img, .work-card, .service-card, .cs-block { page-break-inside: avoid; }
+}

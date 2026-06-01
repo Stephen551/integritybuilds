@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="theme-init.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/favicon-64.png" />
+  <title>Privacy · IntegrityBuilds</title>
+  <meta name="description" content="What IntegrityBuilds.dev collects when you submit the intake form, why, and how to ask for it to be deleted." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://integritybuilds.dev/privacy" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/vendor/fonts/geist-latin.woff2" />
+  <link rel="stylesheet" href="/styles.css?v=__BUILD__" />
+</head>
+<body>
+
+  <a href="#privacy-body" class="skip-to-content">Skip to content</a>
+
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="/" aria-label="IntegrityBuilds home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name"><b>integrity</b>builds</span>
+      </a>
+      <div class="nav-links">
+        <a href="/#work">Work</a>
+        <a href="/#services">Services</a>
+        <a href="/#about">About</a>
+        <a href="/#contact">Contact</a>
+      </div>
+      <div class="nav-right">
+        <span class="status-pill"><span class="status-dot"></span> Booking <span data-current-month>May</span></span>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+            <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="2" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="22" y2="12" />
+              <line x1="4.5" y1="4.5" x2="6.6" y2="6.6" />
+              <line x1="17.4" y1="17.4" x2="19.5" y2="19.5" />
+              <line x1="4.5" y1="19.5" x2="6.6" y2="17.4" />
+              <line x1="17.4" y1="6.6" x2="19.5" y2="4.5" />
+            </g>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M20 14.5A8 8 0 0 1 9.5 4a0.5 0.5 0 0 0-0.8-0.5A9.5 9.5 0 1 0 20.5 15.3a0.5 0.5 0 0 0-0.5-0.8z" fill="currentColor" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary">Start a project <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+  <header class="cs-hero">
+    <div class="wrap">
+      <a href="/" class="cs-back">← Back to studio</a>
+
+      <div class="section-eyebrow reveal">
+        <span class="num">/ legal</span>
+        <span class="lbl">Privacy</span>
+      </div>
+
+      <h1 class="cs-h1 reveal" style="--reveal-delay: 60ms">
+        Privacy. <span class="serif-italic">Straight answers.</span>
+      </h1>
+      <p class="cs-lede reveal" style="--reveal-delay: 120ms">
+        Everything this site collects, why it collects it, and exactly how to make it go away.
+        No legalese. No dark patterns. Last updated <span data-privacy-updated>May 16, 2026</span>.
+      </p>
+    </div>
+  </header>
+
+  <section class="cs-body" id="privacy-body">
+    <div class="wrap">
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ What this site collects</span>
+        <div>
+          <h3>One thing: form submissions.</h3>
+          <p>
+            IntegrityBuilds.dev is a static site with one form. The contact form on the home page
+            POSTs to a Cloudflare Pages Function that writes the submission to a database (Cloudflare D1)
+            and emails me. That is the only data this site stores about you.
+          </p>
+          <p>The submitted record contains:</p>
+          <ul>
+            <li>The name and email you typed</li>
+            <li>The project type you selected and the project brief you wrote</li>
+            <li>Your preferred call times and timezone</li>
+            <li>The page you arrived from (the referrer)</li>
+            <li>A hash of your IP address (SHA-256 with a server-side salt, not the raw address)</li>
+            <li>Your browser's user-agent string</li>
+            <li>A timestamp</li>
+          </ul>
+          <p>
+            That's the whole list. No Google Analytics, no Facebook pixel, no third-party
+            tracking script, no cookies set by this site. The host (Cloudflare) collects standard
+            edge request metadata in the normal course of serving any website (timing, country,
+            user-agent) and, if Web Analytics is enabled, an anonymous page-view ping. None of
+            that is shared with me beyond aggregate counts.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Why I hash the IP</span>
+        <div>
+          <h3>So a database leak does not expose visitors.</h3>
+          <p>
+            Raw IPs identify people. Hashed IPs don't, but they're still stable enough to let me
+            spot repeat submissions from the same source (useful for triaging spam). The hash uses
+            SHA-256 with a salt stored in a server-side environment variable. The plaintext IP
+            never lands in the database.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Where it lives</span>
+        <div>
+          <h3>Cloudflare D1, in the United States.</h3>
+          <p>
+            The submission database (D1) is hosted by Cloudflare. The notification email is sent
+            via Resend (a transactional email provider) to my personal inbox at
+            <code>stephenalatriste@integritybuilds.dev</code>. I review submissions manually. There is no
+            CRM, no marketing automation, no third-party tracking.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ How long it stays</span>
+        <div>
+          <h3>Until I reply, or 90 days, whichever is longer.</h3>
+          <p>
+            Submissions stay in the database while I work the inbound. Active threads are kept for
+            client-relationship reasons; inquiries I've replied to and closed get deleted after 90
+            days unless you've become a client.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Cookies</span>
+        <div>
+          <h3>None set by this site.</h3>
+          <p>
+            This site sets zero cookies. Cloudflare's CDN may set its own bot-management cookie
+            (<code>__cf_bm</code>) as part of normal anti-abuse traffic; I don't read it or use it
+            for anything.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Your rights</span>
+        <div>
+          <h3>Email me. I'll delete it.</h3>
+          <p>
+            Email <a href="mailto:stephenalatriste@integritybuilds.dev?subject=Privacy%20request">stephenalatriste@integritybuilds.dev</a>
+            with the subject line "Privacy request" and one of:
+          </p>
+          <ul>
+            <li><b>Delete my data.</b> I'll remove your submission within seven days and reply to confirm.</li>
+            <li><b>Show me what you have.</b> I'll send back the row, in plain text, within seven days.</li>
+            <li><b>Correct my data.</b> Tell me what to change.</li>
+          </ul>
+          <p>
+            If you're in the EU/UK, these requests are your rights under GDPR. Honoring them is
+            the policy here regardless of where you live.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Changes</span>
+        <div>
+          <h3>When this page changes, the date at the top changes.</h3>
+          <p>
+            No silent rewrites. If the practice changes, this page changes, and the
+            "Last updated" date at the top of the page changes with it.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  </main>
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col footer-brand-row">
+          <a class="brand" href="/" style="margin-bottom: 8px;">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-name"><b>integrity</b>builds</span>
+          </a>
+          <p>Custom-coded websites for content creators and small businesses. Built one at a time, in Maryland.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Studio</h3>
+          <a href="/#work">Selected work</a>
+          <a href="/#services">Services</a>
+          <a href="/#about">About</a>
+        </div>
+        <div class="footer-col">
+          <h3>Case studies</h3>
+          <a href="/work/skellywags.html">Skellywags Club</a>
+          <a href="/work/acmeridian.html">A&amp;C Meridian</a>
+          <a href="/work/midnight-boost.html">Midnight Boost</a>
+          <a href="/work/stillerror.html">Stillerror</a>
+        </div>
+        <div class="footer-col">
+          <h3>Contact</h3>
+          <a href="mailto:stephenalatriste@integritybuilds.dev">stephenalatriste@integritybuilds.dev</a>
+          <a href="https://www.fiverr.com/integritybuilds" target="_blank" rel="noopener">Fiverr profile ↗</a>
+          <a href="/privacy">Privacy</a>
+          <span style="color:var(--mute)">Maryland, USA</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="mono-tiny">© <span data-year>2026</span> IntegrityBuilds · Stephen Alatriste · All rights reserved</span>
+        <span class="mono-tiny">v 1.0 · custom · no templates</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/main.js?v=__BUILD__"></script>
+</body>
+</html>

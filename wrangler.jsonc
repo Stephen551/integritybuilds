@@ -1,0 +1,50 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Cloudflare Pages config for integritybuilds.dev.
+  // The site is static HTML/CSS/JS; this file exists so the /api/intake
+  // Function can talk to D1 (the SQLite database that stores form
+  // submissions). Local dev: `wrangler pages dev`. Apply migrations:
+  // `wrangler d1 migrations apply integritybuilds-intakes`.
+  "name": "integritybuilds",
+  "pages_build_output_dir": "./",
+  "compatibility_date": "2026-05-16",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "integritybuilds-intakes",
+      "database_id": "8fc6d5d5-4608-4012-bf96-6ab4b0bf5389"
+    }
+  ],
+
+  // R2 bucket for weekly D1 → R2 backups via /api/admin/backup.
+  // Create the bucket via the dashboard (or `wrangler r2 bucket create
+  // integritybuilds-backups`) and bind it in Pages → Settings →
+  // Functions → R2 bucket bindings with variable name BACKUPS.
+  "r2_buckets": [
+    {
+      "binding": "BACKUPS",
+      "bucket_name": "integritybuilds-backups"
+    }
+  ],
+
+  // Public, non-sensitive vars (committed). For local dev only. In
+  // production these are overridden by the Pages dashboard (Settings
+  // → Functions → Environment variables → Production).
+  //
+  // Secrets (must be set in the dashboard, NEVER committed):
+  //   INTAKE_IP_SALT       - random string. Salts the SHA-256 IP hash so
+  //                          a DB leak doesn't expose visitor identities.
+  //                          Generate: `openssl rand -hex 32`
+  //   BACKUP_TOKEN         - random shared secret for /api/admin/backup.
+  //                          Generate: `openssl rand -hex 32`
+  //   RESEND_API_KEY       - Resend API key with "Sending access" scoped
+  //                          to integritybuilds.dev. Create at resend.com →
+  //                          API Keys. Verify the integritybuilds.dev
+  //                          sender domain first (Resend → Domains).
+  "vars": {
+    "INTAKE_TO_EMAIL": "stephenalatriste@integritybuilds.dev",
+    "INTAKE_FROM_EMAIL": "intake@integritybuilds.dev",
+    "INTAKE_FROM_NAME": "IntegrityBuilds intake"
+  }
+}
