@@ -87,6 +87,64 @@
     });
   }
 
+  // ---------- Mobile nav menu ----------
+  // Under 720px the section links (.nav-links) are hidden. Build a hamburger
+  // toggle + dropdown panel from those same links so touch users can reach
+  // Work / Services / About / Contact. Progressive enhancement: if this never
+  // runs, the "Start a project" CTA is still in the bar.
+  const navEl = document.querySelector('.nav');
+  const navLinks = navEl && navEl.querySelector('.nav-links');
+  const navRight = navEl && navEl.querySelector('.nav-right');
+  if (navEl && navLinks && navRight && navLinks.querySelector('a')) {
+    const menuToggle = document.createElement('button');
+    menuToggle.type = 'button';
+    menuToggle.className = 'nav-menu-toggle';
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-controls', 'nav-mobile-panel');
+    menuToggle.setAttribute('aria-label', 'Open menu');
+    menuToggle.innerHTML = '<span class="bars" aria-hidden="true"><span></span></span>';
+
+    const panel = document.createElement('div');
+    panel.className = 'nav-mobile-panel';
+    panel.id = 'nav-mobile-panel';
+    panel.hidden = true;
+
+    navRight.insertBefore(menuToggle, navRight.firstChild);
+    navEl.appendChild(panel);
+
+    let menuOpen = false;
+    const setMenu = (next) => {
+      menuOpen = next;
+      menuToggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+      menuToggle.setAttribute('aria-label', next ? 'Close menu' : 'Open menu');
+      if (next) {
+        panel.hidden = false;
+        requestAnimationFrame(() => panel.classList.add('open'));
+      } else {
+        panel.classList.remove('open');
+        setTimeout(() => { if (!menuOpen) panel.hidden = true; }, 200);
+      }
+    };
+    const closeMenu = () => setMenu(false);
+
+    navLinks.querySelectorAll('a').forEach((a) => {
+      const link = a.cloneNode(true);
+      link.addEventListener('click', closeMenu);
+      panel.appendChild(link);
+    });
+
+    menuToggle.addEventListener('click', () => setMenu(!menuOpen));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuOpen) { closeMenu(); menuToggle.focus(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (menuOpen && !panel.contains(e.target) && !menuToggle.contains(e.target)) closeMenu();
+    });
+    window.addEventListener('resize', () => {
+      if (menuOpen && window.innerWidth > 720) closeMenu();
+    });
+  }
+
   // Reveal on scroll
   const els = document.querySelectorAll('.reveal');
   if (els.length && 'IntersectionObserver' in window) {
