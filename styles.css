@@ -1520,6 +1520,90 @@ h1, h2, h3, h4 {
   animation: none;
 }
 
+/* ---------- card treatment 05 · Fonthead (type foundry / library) ----------
+   A bright type-gallery. Where Stillerror is a dark editor pane and Midnight
+   is cinematic, Fonthead is a clean white room where the only colour comes
+   from the fonts themselves. The chrome carries a serif "Aa" specimen pill
+   (not a mono LIVE/ERROR pill), the preview sits on faint baseline rules like
+   ruled specimen paper, and the one accent is Fonthead's own signal red.
+   Different from Meridian (also light): Meridian is warm paper + a serif
+   credit line and no accent; Fonthead is cool gallery white + a red specimen
+   mark + a foundry's quiet, technical calm. */
+.work-card-fonthead {
+  --fh-accent: #D4342A;
+  --fh-accent-soft: rgba(212, 52, 42, 0.10);
+}
+.work-card-fonthead .work-card-preview {
+  background:
+    repeating-linear-gradient(to bottom,
+      transparent 0, transparent 33px,
+      rgba(212, 52, 42, 0.05) 33px, rgba(212, 52, 42, 0.05) 34px),
+    #FBFAF8;
+}
+.work-card-fonthead .preview-window {
+  box-shadow:
+    0 24px 50px -22px rgba(14, 15, 18, 0.22),
+    0 0 0 1px rgba(14, 15, 18, 0.05);
+  border-color: rgba(14, 15, 18, 0.08);
+}
+.work-card-fonthead .preview-chrome {
+  background: #F6F5F2;
+}
+.work-card-fonthead .preview-chrome .url {
+  color: #7A7872;
+}
+.work-card-fonthead .work-tag {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: var(--line);
+  color: var(--ink-3);
+}
+.work-card-fonthead .work-card-link:hover {
+  color: var(--fh-accent);
+  border-color: var(--fh-accent);
+}
+.work-card-fonthead:hover .work-card-link .arrow {
+  color: var(--fh-accent);
+}
+.work-card-fonthead:hover .preview-window {
+  transform: translateY(-6px);
+  box-shadow:
+    0 30px 60px -22px rgba(212, 52, 42, 0.18),
+    0 0 0 1px rgba(212, 52, 42, 0.12);
+}
+
+/* Specimen pill: a serif italic "Aa" where the other cards put LIVE / ERROR.
+   Serif + red against the mono pills elsewhere, so the card reads "foundry"
+   at a glance. No pulse: it is a label, not a live signal. */
+.chrome-pill-spec {
+  background: var(--fh-accent-soft, rgba(212, 52, 42, 0.10));
+  color: var(--fh-accent, #D4342A);
+  border: 1px solid rgba(212, 52, 42, 0.22);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 1px 9px;
+}
+
+/* Dark theme: the captured screenshot is a real light website, so the window
+   keeps its paper tone (as Meridian does). Only the surround darkens, so the
+   visitor is not blasted with a white rectangle, and the accent warms. */
+[data-theme="dark"] .work-card-fonthead {
+  --fh-accent: #FF6F63;
+  --fh-accent-soft: rgba(255, 111, 99, 0.12);
+}
+[data-theme="dark"] .work-card-fonthead .work-card-preview {
+  background:
+    repeating-linear-gradient(to bottom,
+      transparent 0, transparent 33px,
+      rgba(255, 111, 99, 0.06) 33px, rgba(255, 111, 99, 0.06) 34px),
+    #16140E;
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-card-fonthead:hover .preview-window { transform: none; }
+}
+
 /* ---------- services ---------- */
 .services-grid {
   display: grid;
@@ -2327,6 +2411,7 @@ h1, h2, h3, h4 {
 .preview-meridian   { view-transition-name: case-meridian; }
 .preview-midnight   { view-transition-name: case-midnight; }
 .preview-stillerror { view-transition-name: case-stillerror; }
+.preview-fonthead   { view-transition-name: case-fonthead; }
 
 ::view-transition-old(case-skelly),
 ::view-transition-new(case-skelly),
@@ -2335,7 +2420,9 @@ h1, h2, h3, h4 {
 ::view-transition-old(case-midnight),
 ::view-transition-new(case-midnight),
 ::view-transition-old(case-stillerror),
-::view-transition-new(case-stillerror) {
+::view-transition-new(case-stillerror),
+::view-transition-old(case-fonthead),
+::view-transition-new(case-fonthead) {
   animation-duration: 460ms;
   animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -2644,6 +2731,13 @@ h1, h2, h3, h4 {
 .preview-stillerror .preview-chrome { background: #12141A; border-bottom: 1px solid rgba(237, 236, 230, 0.06); }
 .preview-stillerror .preview-chrome .url { background: rgba(0, 0, 0, 0.45); color: rgba(237, 236, 230, 0.55); font-family: var(--font-mono); }
 
+/* Fonthead · type foundry / community library. Light gallery chrome that
+   matches the real white-room site; the captured screenshot is light, so the
+   window keeps its paper tone in both themes (only the surround shifts). */
+.preview-fonthead { background: #FBFAF8; color: var(--ink); }
+.preview-fonthead .preview-chrome { background: #F6F5F2; border-bottom: 1px solid rgba(14, 15, 18, 0.06); }
+.preview-fonthead .preview-chrome .url { background: #fff; color: #7A7872; font-family: var(--font-mono); }
+
 /* ---------- case study page ---------- */
 .cs-hero {
   padding: 140px 0 64px;
@@ -2732,6 +2826,56 @@ h1, h2, h3, h4 {
   margin-top: 28px;
   max-width: 56ch;
   letter-spacing: -0.01em;
+}
+
+/* Specimen strip (Fonthead case study only). Echoes the bordered grid of
+   .cs-meta-row, but every cell shows the same two letters in a different
+   face: the one idea the product is built on, one alphabet rendered as many
+   faces. Built from the site's own type, decorative (aria-hidden in markup),
+   static by design. */
+.cs-specimen-cap {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin: 44px 0 12px;
+}
+.cs-specimen {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+@media (max-width: 720px) { .cs-specimen { grid-template-columns: repeat(2, 1fr); } }
+.cs-specimen-cell {
+  padding: 26px 18px 18px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+}
+.cs-specimen-cell:last-child { border-right: none; }
+@media (max-width: 720px) {
+  .cs-specimen-cell:nth-child(2) { border-right: none; }
+  .cs-specimen-cell:nth-child(1),
+  .cs-specimen-cell:nth-child(2) { border-bottom: 1px solid var(--line); }
+}
+.cs-specimen-glyph {
+  font-size: 44px;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.cs-specimen-cell .lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
 .cs-preview-section {

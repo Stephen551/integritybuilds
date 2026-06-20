@@ -10,10 +10,11 @@ This repository is the source for the IntegrityBuilds site. It is public so pros
 
 Every build is custom and intentionally looks nothing like the others.
 
-- **A&C Meridian** — a web studio's site rebuilt as an immersive three.js experience on Astro 4, with a custom admin panel running underneath. [Case study](https://integritybuilds.dev/work/acmeridian) · [Live](https://acmeridian.co)
-- **Skellywags Club** — a streamer's whole business on one URL: merch storefront, three-tier memberships, Discord and Twitch integration. [Case study](https://integritybuilds.dev/work/skellywags) · [Live](https://skellywags.club)
-- **Midnight Boost** — a cinematic dark-mode site for an auto detailing business, with a scroll-driven scene and multi-step booking. [Case study](https://integritybuilds.dev/work/midnight-boost)
-- **Stillerror** — a SaaS marketing site and tool that both speak the same IDE and debugger dialect. [Case study](https://integritybuilds.dev/work/stillerror)
+- **Fonthead** is an in-browser font foundry. It traces an alphabet sheet or your own handwriting into an installable OTF, TTF, and WOFF2, then publishes it to a community wall. Astro 5 on Cloudflare Workers, with the tracing and the OpenType build done client-side. [Case study](https://integritybuilds.dev/work/fonthead) · [Live](https://fonthead.dev)
+- **A&C Meridian**, a web studio's site rebuilt as an immersive three.js experience on Astro 4, with a custom admin panel running underneath. [Case study](https://integritybuilds.dev/work/acmeridian) · [Live](https://acmeridian.co)
+- **Skellywags Club**, a streamer's whole business on one URL: merch storefront, three-tier memberships, Discord and Twitch integration. [Case study](https://integritybuilds.dev/work/skellywags) · [Live](https://skellywags.club)
+- **Midnight Boost**, a cinematic dark-mode site for an auto detailing business, with a scroll-driven scene and multi-step booking. [Case study](https://integritybuilds.dev/work/midnight-boost)
+- **Stillerror**, a SaaS marketing site and tool that both speak the same IDE and debugger dialect. [Case study](https://integritybuilds.dev/work/stillerror)
 
 ## Stack
 

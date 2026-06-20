@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://integritybuilds.dev/work/fonthead.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://integritybuilds.dev/work/skellywags.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

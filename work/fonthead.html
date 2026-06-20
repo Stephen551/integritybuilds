@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="../theme-init.js"></script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="../favicon-64.png" />
+  <title>Fonthead · Case Study · IntegrityBuilds</title>
+  <meta name="description" content="An in-browser font foundry: trace an alphabet sheet or your handwriting into an installable OTF, TTF, and WOFF2, then publish it to a community wall. Astro 5 on Cloudflare Workers, a React maker island, D1 + R2 + KV, with client-side tracing and SFNT checksum repair." />
+  <link rel="canonical" href="https://integritybuilds.dev/work/fonthead" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://integritybuilds.dev/work/fonthead" />
+  <meta property="og:title" content="Fonthead · Case Study · IntegrityBuilds" />
+  <meta property="og:description" content="An in-browser font foundry: trace an alphabet sheet or your handwriting into an installable OTF, TTF, and WOFF2, then publish it to a community wall. Astro 5 on Cloudflare Workers, client-side tracing, SFNT checksum repair." />
+  <meta property="og:image" content="https://integritybuilds.dev/images/og/fonthead.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fonthead · Case Study · IntegrityBuilds" />
+  <meta name="twitter:description" content="An in-browser font foundry: trace an alphabet sheet or your handwriting into an installable OTF, TTF, and WOFF2, then publish it to a community wall. Astro 5 on Cloudflare Workers, client-side tracing, SFNT checksum repair." />
+  <meta name="twitter:image" content="https://integritybuilds.dev/images/og/fonthead.jpg" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../vendor/fonts/geist-latin.woff2" />
+  <link rel="stylesheet" href="../styles.css?v=__BUILD__" />
+  <script src="../vendor/lenis-1.1.13.min.js" defer></script>
+</head>
+<body>
+
+  <a href="#cs-body" class="skip-to-content">Skip to content</a>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="IntegrityBuilds home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name"><b>integrity</b>builds</span>
+      </a>
+      <div class="nav-links">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#services">Services</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+      <div class="nav-right">
+        <span class="status-pill"><span class="status-dot"></span> Booking now</span>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+            <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="2" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="22" y2="12" />
+              <line x1="4.5" y1="4.5" x2="6.6" y2="6.6" />
+              <line x1="17.4" y1="17.4" x2="19.5" y2="19.5" />
+              <line x1="4.5" y1="19.5" x2="6.6" y2="17.4" />
+              <line x1="17.4" y1="6.6" x2="19.5" y2="4.5" />
+            </g>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M20 14.5A8 8 0 0 1 9.5 4a0.5 0.5 0 0 0-0.8-0.5A9.5 9.5 0 1 0 20.5 15.3a0.5 0.5 0 0 0-0.5-0.8z" fill="currentColor" />
+          </svg>
+        </button>
+        <a href="../index.html#contact" class="btn btn-primary">Start a project <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+  <header class="cs-hero">
+    <div class="wrap">
+      <a href="../index.html#work" class="cs-back">← All work</a>
+
+      <div class="section-eyebrow reveal">
+        <span class="num">/ Case 01</span>
+        <span class="lbl">Font foundry + community library · 2026</span>
+      </div>
+
+      <h1 class="cs-h1 reveal" style="--reveal-delay: 60ms">
+        A type foundry that runs in <span class="serif-italic">your browser.</span>
+      </h1>
+      <p class="cs-lede reveal" style="--reveal-delay: 120ms">
+        Fonthead turns an alphabet sheet, or your own handwriting, into a font your
+        computer will actually install. Every glyph traced and spaced, exported as OTF,
+        TTF, and WOFF2. The tracing, the OpenType build, and the WOFF2 compression all run
+        on your machine, so your handwriting never leaves the browser. Then you publish the
+        face to a community wall where everything else was made the same way.
+      </p>
+
+      <div class="cs-meta-row reveal" style="--reveal-delay: 180ms">
+        <div class="cs-meta-cell"><span class="k">Project</span><span class="v">Fonthead (my SaaS)</span></div>
+        <div class="cs-meta-cell"><span class="k">Role</span><span class="v">Founder · sole dev</span></div>
+        <div class="cs-meta-cell"><span class="k">Scope</span><span class="v">Maker + community library</span></div>
+        <div class="cs-meta-cell"><span class="k">Shipped</span><span class="v">2026 · live, public repo</span></div>
+      </div>
+
+      <aside class="cs-method-callout reveal" style="--reveal-delay: 240ms">
+        <span class="cs-method-label">/ Method</span>
+        <p>
+          Everything that turns a drawing into a font happens client-side. Astro 5 renders
+          the library on Cloudflare Workers and a single React island is the maker. Potrace
+          traces each glyph, a Web Worker assembles the OpenType binary, and a WebAssembly
+          module compresses it to WOFF2, all in the tab. D1 holds the wall, R2 serves the
+          binaries through a visibility-gated CDN, and a nightly Worker cron recomputes the
+          featured set from the day's votes.
+        </p>
+      </aside>
+
+      <p class="cs-specimen-cap reveal" style="--reveal-delay: 300ms">/ one alphabet · every face</p>
+      <div class="cs-specimen reveal" style="--reveal-delay: 320ms" aria-hidden="true">
+        <div class="cs-specimen-cell"><span class="cs-specimen-glyph">Aa</span><span class="lbl">sans</span></div>
+        <div class="cs-specimen-cell"><span class="cs-specimen-glyph serif-italic">Aa</span><span class="lbl">serif</span></div>
+        <div class="cs-specimen-cell"><span class="cs-specimen-glyph" style="font-family:var(--font-mono);">Aa</span><span class="lbl">mono</span></div>
+        <div class="cs-specimen-cell"><span class="cs-specimen-glyph" style="font-weight:700;">Aa</span><span class="lbl">bold</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="cs-preview-section">
+    <div class="wrap">
+      <div class="cs-preview-frame reveal">
+        <div class="preview-window preview-fonthead has-image" style="max-width: 760px;">
+          <div class="preview-chrome">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="url">fonthead.dev</span>
+            <span class="chrome-pill chrome-pill-spec">Aa</span>
+          </div>
+          <div class="preview-body">
+            <img src="../images/work/fonthead.webp" alt="Fonthead community font library home page, a wall of community-made font specimens" loading="lazy" decoding="async" width="1440" height="900" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-body" id="cs-body">
+    <div class="wrap">
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ The brief</span>
+        <div>
+          <h3>Making a real font is a typography project. Most people just want their handwriting.</h3>
+          <p>
+            The tools that build production fonts (Glyphs, FontForge, RoboFont) assume you
+            already speak typography: spacing, kerning, hinting, the difference between a
+            contour and a component. A crafter who sells on Etsy, or someone who just wants
+            their own handwriting as a typeface, hits that wall on day one. The capability
+            exists. The on-ramp does not.
+          </p>
+          <p>
+            The brief I set was narrow. Take the one input a non-typographer can produce, an
+            alphabet sheet or a page of handwriting, and return a font that installs cleanly
+            on Windows, macOS, and the web. Simple enough for a Cricut crafter on the first
+            try, with the depth a designer wants sitting one reveal away. And make the result
+            worth showing, so finishing a font drops you onto a wall next to everyone else's.
+          </p>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Part I · The maker</span>
+        <div>
+          <h3>The whole foundry runs in the browser.</h3>
+          <p>
+            Drop a sheet and the machine shows its actual work, not a spinner. It binarizes
+            the image, finds the rows, slices each row into glyph cells, traces every cell
+            into vectors, and assembles a real font. Nothing is uploaded to do any of it.
+            Potrace runs the trace on the main thread, a Web Worker builds the OpenType binary
+            off the main thread, and a WebAssembly build of wawoff2 compresses the result to
+            WOFF2 in the tab.
+          </p>
+          <ul>
+            <li>Three formats from one sheet: OTF, TTF, and WOFF2, built client-side from the traced outlines</li>
+            <li>Sheet geometry detection cuts rows into glyphs with four cascading slicers (whitespace, anchored minima, connected components, ownership), and you can re-slice a row by hand when a letter is miscut</li>
+            <li>Trace presets (glyph, logo, sketch) trade fidelity for smoothness; a fine-detail pass resamples first so serifs survive</li>
+            <li>Color fonts (flat <code>COLR/CPAL</code> and gradient <code>COLRv1</code>) and single-line fonts for Cricut pens and plotters, each on its own path</li>
+            <li>SFNT checksum repair: every table checksum and <code>head.checkSumAdjustment</code> recomputed, then verified again server-side on publish</li>
+            <li>The engine's cache version is derived from its own bytes, so any change to the build code busts the browser cache automatically</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Part II · The library</span>
+        <div>
+          <h3>The home is the library, not a landing page.</h3>
+          <p>
+            You land in the work: a wall of fonts rendered as live specimens rather than a
+            name in a default face. Sort by popular or new, search by font or maker, filter
+            by kind. The masthead cycles real faces, the same word re-rendered every few
+            seconds, and that slot doubles as the daily feature. A nightly Cloudflare cron
+            tallies the previous day's votes and promotes the most-liked, automatically, with
+            a cold-start fallback to the house fonts.
+          </p>
+          <p>
+            Each font has a specimen page you can type into, with glyph count, file size, and
+            formats sitting as quiet mono texture, plus downloads and an OFL, CC0, or
+            personal-use license. Accounts stay light and are only needed to publish or
+            favorite. Makers get a profile at their handle.
+          </p>
+          <ul>
+            <li>better-auth for email and Google sign-in, with soft email verification</li>
+            <li>D1 for fonts, votes, favorites and the featured set; R2 for binaries and avatars behind a visibility-gated <code>/cdn</code> route with edge caching</li>
+            <li>KV-backed rate limits on every mutation; uploads validated by their signature bytes, not a content-type header</li>
+            <li>Moderation: a normalized banlist, font and maker reports, soft-bans, and an admin queue</li>
+            <li>Strict CSP (the wasm needs <code>unsafe-eval</code>, the font worker needs blob workers), HSTS, and the usual hardening headers</li>
+            <li>A Playwright end-to-end suite plus a corpus regression over a seeded font set</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cs-stat-row reveal">
+        <div class="cs-stat"><div class="v">3</div><span class="k">Formats built from one sheet · OTF, TTF, WOFF2</span></div>
+        <div class="cs-stat"><div class="v">0</div><span class="k">Bytes of your handwriting uploaded to trace it</span></div>
+        <div class="cs-stat"><div class="v">4</div><span class="k">Cascading slicers that cut a sheet into glyphs</span></div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Decisions</span>
+        <div>
+          <h3>What I picked, and what I didn't.</h3>
+          <ol class="cs-decision-list">
+            <li class="cs-decision">
+              <span class="cs-decision-num">01</span>
+              <div>
+                <h4 class="cs-decision-pick">The whole foundry runs client-side.</h4>
+                <p class="cs-decision-why">Tracing, the OpenType build, and WOFF2 compression all happen in the browser. That keeps a person's handwriting on their own machine, makes the maker free to run at any volume since no server does the work, and means a font is ready to download the instant it builds. The cost I paid is shipping a real font engine to the client (a Potrace trace, a Web Worker builder, and a wasm WOFF2 compressor) and keeping it small.</p>
+                <p class="cs-decision-rejected"><span class="k">Considered:</span> a server-side font pipeline (rejected, it means uploading handwriting and paying per build), a desktop app (rejected, the whole point is no install)</p>
+              </div>
+            </li>
+            <li class="cs-decision">
+              <span class="cs-decision-num">02</span>
+              <div>
+                <h4 class="cs-decision-pick">Fix the checksums Windows actually enforces.</h4>
+                <p class="cs-decision-why">An OpenType writer can leave a table checksum off by one when a table is not 4-byte aligned. Browsers and fontkit tolerate it, so the font previews fine, then fails to install on Windows. Fonthead recomputes every table checksum and the <code>head.checkSumAdjustment</code> as pure ArrayBuffer math, on the client and again server-side on publish, so a published font installs everywhere.</p>
+                <p class="cs-decision-rejected"><span class="k">Considered:</span> trusting the writer's checksums (rejected, files previewed fine in Chrome and were refused by Windows), repairing only on the server (rejected, the client should hand back a valid file directly)</p>
+              </div>
+            </li>
+            <li class="cs-decision">
+              <span class="cs-decision-num">03</span>
+              <div>
+                <h4 class="cs-decision-pick">The home is the library, and the feature picks itself.</h4>
+                <p class="cs-decision-why">Most product sites open on a marketing hero and a three-feature row. Fonthead opens on the work: a wall of real specimens, with a masthead that cycles community faces. The daily feature is computed by a nightly cron from the previous day's votes, not hand-curated, so the room stays current without anyone tending it. The fonts are the only color the page needs.</p>
+                <p class="cs-decision-rejected"><span class="k">Considered:</span> a marketing landing page with a feature grid (rejected as the genre default), hand-picking the daily feature (rejected, it does not scale and it plays favorites)</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="cs-block reveal">
+        <span class="cs-block-label">/ Result</span>
+        <div>
+          <h3>Live at fonthead.dev, with the code in the open.</h3>
+          <p>
+            Fonthead is up. The wall has fonts on it, color faces included, each one built
+            through the same maker. The masthead cycles them, the nightly feature rotates on
+            its own, and a font goes from a photographed sheet to an installed OTF without a
+            single upload of the source drawing.
+          </p>
+          <p>
+            Like this site, the repo is public, so anyone can read how the trace, the
+            OpenType build, and the checksum repair actually work rather than take my word
+            for it. It is early, version 0.1, built and run by one person, the same way every
+            other build under this name is.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="cs-next">
+    <div class="wrap">
+      <a href="skellywags.html" class="cs-next-card">
+        <div>
+          <span class="l">Next case study · 02 / 05</span>
+          <h3>Skellywags Club. <span class="serif-italic" style="color:var(--ink-3)">a creator's whole business on one URL.</span></h3>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  </main>
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col footer-brand-row">
+          <a class="brand" href="../index.html" style="margin-bottom: 8px;">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-name"><b>integrity</b>builds</span>
+          </a>
+          <p>Custom-coded websites for content creators and small businesses. Built one at a time, in Maryland.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Studio</h3>
+          <a href="../index.html#work">Selected work</a>
+          <a href="../index.html#services">Services</a>
+          <a href="../index.html#about">About</a>
+        </div>
+        <div class="footer-col">
+          <h3>Case studies</h3>
+          <a href="fonthead.html">Fonthead</a>
+          <a href="skellywags.html">Skellywags Club</a>
+          <a href="acmeridian.html">A&amp;C Meridian</a>
+          <a href="midnight-boost.html">Midnight Boost</a>
+          <a href="stillerror.html">Stillerror</a>
+        </div>
+        <div class="footer-col">
+          <h3>Contact</h3>
+          <a href="mailto:stephenalatriste@integritybuilds.dev">stephenalatriste@integritybuilds.dev</a>
+          <a href="https://www.fiverr.com/integritybuilds" target="_blank" rel="noopener">Fiverr profile ↗</a>
+          <a href="/privacy">Privacy</a>
+          <span style="color:var(--mute)">Maryland, USA</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="mono-tiny">© <span data-year>2026</span> IntegrityBuilds · Stephen Alatriste · All rights reserved</span>
+        <span class="mono-tiny">v 1.0 · custom · no templates</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js?v=__BUILD__"></script>
+</body>
+</html>
